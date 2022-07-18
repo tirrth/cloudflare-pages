@@ -30011,10 +30011,18 @@ export default {
     async fetch(request, env, _context) {
         // const cache = caches.default
         // await cache.match(request)
-        const { host } = new URL(request.url)
+        // console.log(request)
+        // console.log(new URL(request.url))
+        const { host, pathname } = new URL(request.url)
+        const paths = pathname.split('/')
+        paths.shift()
         console.log('host =', host)
-        console.log('env =', env)
-        const response = new Response(request.url)
+        console.log('paths =', paths)
+        // console.log('env =', env, _context)
+        const kvs = await Promise.all(paths.map((p) => env.SPACES.get(p).catch(_ => null)))
+        // const kv = await env.SPACES.get('IXeYp8QBh4emThl11ABp')
+        console.log('kvs =', kvs)
+        const response = new Response(`${request.url} - ${kvs.filter(kv => !!kv)}`)
         response.headers.set('X-Hello', 'Hello from the worker!')
         return response
     }
