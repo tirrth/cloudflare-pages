@@ -43,6 +43,7 @@ export default {
         if (cachedResponse) return cachedResponse
         const html = await fetch(`${env.NEXT_SERVER_ENDPOINT}/api/revalidate?path=${pathname}&space=${space}`).then(res => res.text())
         const response = new Response(html, { status: 200, headers: { 'Content-Type': 'text/html' } })
+        response.headers.set('env', JSON.stringify(env))
         response.headers.set('FC-Space', space)
         response.headers.append('Cache-Control', `max-age=${env.PAGE_REVALIDATE_TIME}`)
         await cache.put(cacheKey, response.clone())
